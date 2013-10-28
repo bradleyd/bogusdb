@@ -1,24 +1,19 @@
 require "securerandom"
 
 module Bogusdb
-  # simulates a basic database record
-  # @param [Hash] args column names and values
+  # simulate a basic database record ORM style
+  # @param [Hash] table_data column names and values
   class Record
-    attr_accessor :new_record
     def initialize(table_data)
-      #raise TypeError unless Hash(table_data)
+      raise TypeError unless Hash(table_data)
       @table_data = table_data
-      #set_id
-      defaults = Hash[@table_data.map { |k, v|
-        [k.to_sym, v] 
-      }]
-      @attributes = initialize_attributes(defaults)
+      set_id
+      @attributes = initialize_attributes(@table_data)
     end
 
-    def id
-      SecureRandom.random_number(100)
-    end
-
+    # @note can pass array of hashes to build records
+    # @param [Array, Hash] args
+    # @retrun [Array, Bogusdb::Record] 
     def self.create(args)
       rows = []
       args.each do |arg|
@@ -33,11 +28,12 @@ module Bogusdb
 
     # @param  [String, Symbol] table_name joined table name
     # @param  [Hash] opts column names and values
-    # @return [Bogusdb::Record] 
+    # @return [Bogusdb::Record, Array] joined table rows 
     def join_table(table_name, opts)
       self.class.send(:define_method, table_name.to_sym) do 
-        self.class.create(opts)
+        self.class.create([opts].flatten)
       end
+      self.send(table_name)
     end
 
     def inspect
@@ -49,16 +45,13 @@ module Bogusdb
 
     private
 
-    #def to_hash
-    #hsh = {}
-    #column_names.sort.each do |m|
-    #hsh[m] = self.method(m).call unless [:attributes].include? m
-    #end
-    #hsh
-    #end
+    def id
+      SecureRandom.random_number(100)
+    end
+
 
     def column_names
-      @table_data.keys 
+      @table_data.keys
     end
 
     def set_id
@@ -73,6 +66,5 @@ module Bogusdb
         self.define_singleton_method("#{key}=") { |val| options[key]=val }
       end
     end
-
   end
 end
