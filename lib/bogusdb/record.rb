@@ -27,11 +27,23 @@ module Bogusdb
     end
 
     # @param  [String, Symbol] table_name joined table name
-    # @param  [Hash] opts column names and values
+    # @param  [Hash, Array] opts column names and values
     # @return [Bogusdb::Record, Array] joined table rows 
     def join_table(table_name, opts)
       self.class.send(:define_method, table_name.to_sym) do 
         self.class.create([opts].flatten)
+      end
+      self.send(table_name)
+    end
+
+    alias_method :has_many, :join_table
+
+    # @param  [String, Symbol] table_name joined table name
+    # @param  [Hash] opt column names and values
+    # @return [Bogusdb::Record] joined table 
+    def has_one(table_name, opt)
+      self.class.send(:define_method, table_name.to_sym) do 
+        self.class.new(opt)
       end
       self.send(table_name)
     end

@@ -26,6 +26,18 @@ class RecordTest < MiniTest::Test
     assert_equal @bogusdb.first.name, 'foo' 
   end
 
+  def test_bogusdb_responds_to_join_table
+    assert_respond_to @bogusdb, :join_table
+  end
+
+  def test_bogusdb_responds_to_has_one
+    assert_respond_to @bogusdb, :has_one
+  end
+
+  def test_bogusdb_responds_to_has_many
+    assert_respond_to @bogusdb, :has_many
+  end
+
   def test_bogusdb_responds_to_name
     assert_respond_to @bogusdb, :name
   end
@@ -42,16 +54,12 @@ class RecordTest < MiniTest::Test
     assert_kind_of(Hash, @bogusdb.attributes)
   end
 
-  def test_bogusdb_responds_to_join
-    assert_respond_to @bogusdb, :join_table
-  end
-
   def test_join_table_is_called_with_correct_params
     @bogusdb.expects(:join_table).with(:profile, {avatar: 'image.jpg'})  
     @bogusdb.join_table(:profile, {avatar: 'image.jpg'})
   end
 
-  def test_bogusdb_has_a_joined_table
+  def test_bogusdb_responds_to_joined_tables
     @bogusdb.join_table(:profile, {avatar: 'image.jpg'})
     assert_respond_to @bogusdb, :profile
   end
@@ -66,6 +74,16 @@ class RecordTest < MiniTest::Test
     assert_kind_of(Hash, @bogusdb.profile.first.attributes)
   end
 
+  def test_has_one_record_association
+    @bogusdb.has_one(:profile, {gender: 'm', avatar: 'me.jpg'})
+    assert_kind_of Bogusdb::Record, @bogusdb.profile
+  end
+
+  def test_has_many_record_associations
+    @bogusdb.has_many(:profiles, [{avatar: 'image.jpg'}, {avatar: 'sunny.jpg'}])
+    assert_kind_of Array, @bogusdb.profiles
+  end
+
   def test_joined_tables_when_multiples_records_are_created
     @bogusdb = Bogusdb::Record.create([{name: 'foo', dob: '04/14/75'},
                                        {name: 'baz', dob: '01/01/00'}
@@ -76,4 +94,5 @@ class RecordTest < MiniTest::Test
     }
     assert_equal 'me.jpg', @bogusdb.first.profiles.first.avatar
   end
+
 end
