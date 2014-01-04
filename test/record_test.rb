@@ -26,6 +26,16 @@ class RecordTest < MiniTest::Test
     assert_equal @bogusdb.first.name, 'foo' 
   end
 
+  def test_join_table_on_create
+    @bogusdb = Bogusdb::Record.new(name: 'foo', dob: '04/14/75', profile: { avatar: 'image.jpg' })
+    assert_equal @bogusdb.profile.avatar, 'image.jpg'
+  end
+
+  def test_join_array_on_create
+    @bogusdb = Bogusdb::Record.create(name: 'foo', dob: '04/14/75', favorite_colors: [ { name: "red" }, { name: "orange" }])
+    assert_equal @bogusdb.favorite_colors.first.name, "red"
+  end
+
   def test_bogusdb_responds_to_join_table
     assert_respond_to @bogusdb, :join_table
   end
