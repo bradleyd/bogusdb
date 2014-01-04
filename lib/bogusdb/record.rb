@@ -15,11 +15,7 @@ module Bogusdb
     # @param [Array, Hash] args
     # @retrun [Array, Bogusdb::Record] 
     def self.create(args)
-      rows = []
-      args.each do |arg|
-        rows << new(arg)
-      end
-      rows
+      args.is_a?(Array) ? Array.new(args.length) { |i| new(args[i]) } : new(args)
     end
 
     def attributes
