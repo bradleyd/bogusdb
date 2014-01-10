@@ -15,11 +15,7 @@ module Bogusdb
     # @param [Array, Hash] args
     # @retrun [Array, Bogusdb::Record] 
     def self.create(args)
-      rows = []
-      args.each do |arg|
-        rows << new(arg)
-      end
-      rows
+      args.is_a?(Array) ? Array.new(args.length) { |i| new(args[i]) } : new(args)
     end
 
     def attributes
@@ -74,8 +70,12 @@ module Bogusdb
 
     def initialize_attributes(options)
       options.each do |key,value|
-        self.define_singleton_method(key)       { options[key] }
-        self.define_singleton_method("#{key}=") { |val| options[key]=val }
+        if value.is_a?(Hash) || value.is_a?(Array)
+          self.define_singleton_method(key) { Record.create(value) }
+        else
+          self.define_singleton_method(key)       { options[key] }
+          self.define_singleton_method("#{key}=") { |val| options[key]=val }
+        end
       end
     end
   end
