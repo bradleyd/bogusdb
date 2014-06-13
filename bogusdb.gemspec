@@ -10,7 +10,7 @@ Gem::Specification.new do |spec|
   spec.email         = ["bradleydsmith@gmail.com"]
   spec.description   = %q{ A simple fake database object for testing }
   spec.summary       = %q{A simple fake ORM databsase object used in testing}
-  spec.homepage      = "http://github.com:bradleyd/bogusdb.git"
+  spec.homepage      = "https://github.com/bradleyd/bogusdb.git"
   spec.license       = "MIT"
 
   spec.files         = `git ls-files`.split($/)
